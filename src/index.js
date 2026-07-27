@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./lib/db.js";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.js";
+import tutorsRouter from "./routes/tutors.routes.js";
 
 dotenv.config();
 
@@ -20,7 +21,7 @@ app.use(
 
 app.all("/api/auth/*", toNodeHandler(auth));
 app.use(express.json());
-
+app.use("/tutors", tutorsRouter);
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
