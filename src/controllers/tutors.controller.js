@@ -96,3 +96,15 @@ export const deleteTutor = async (req, res) => {
     res.status(500).send({ message: "Failed to delete tutor" });
   }
 };
+
+export const getTutorById = async (req, res) => {
+  try {
+    const db = getDB();
+    const { id } = req.params;
+    const tutor = await db.collection("tutors").findOne({ _id: new ObjectId(id) });
+    if (!tutor) return res.status(404).send({ message: "Tutor not found" });
+    res.send(tutor);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to load tutor" });
+  }
+};
