@@ -1,14 +1,12 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
 import { connectDB } from "./lib/db.js";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.js";
 import tutorsRouter from "./routes/tutors.routes.js";
 import bookingsRouter from "./routes/bookings.routes.js";
-
-dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -19,12 +17,13 @@ app.use(
     credentials: true,
   })
 );
+app.use(cookieParser());
 
-app.all("/api/auth/*", toNodeHandler(auth));
+app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use(express.json());
+
 app.use("/tutors", tutorsRouter);
 app.use("/bookings", bookingsRouter);
-app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.send("MediQueue server is running");
