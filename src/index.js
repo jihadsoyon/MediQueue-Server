@@ -7,6 +7,7 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.js";
 import tutorsRouter from "./routes/tutors.routes.js";
 import bookingsRouter from "./routes/bookings.routes.js";
+import jwtRouter from "./routes/jwt.routes.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -18,7 +19,7 @@ app.use(
   })
 );
 app.use(cookieParser());
-
+app.use("/", jwtRouter);
 app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use(express.json());
 

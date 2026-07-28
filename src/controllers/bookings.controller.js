@@ -9,13 +9,23 @@ export const createBooking = async (req, res) => {
     const tutor = await db.collection("tutors").findOne({ _id: new ObjectId(tutorId) });
     if (!tutor) return res.status(404).send({ message: "Tutor not found" });
 
-    if (tutor.totalSlot <= 0) {
+    const availableSlot =
+      typeof tutor.totalSlot === "number" ? tutor.totalSlot : 1;
+
+    if (availableSlot <= 0) {
       return res.status(400).send({ message: "No available slots left." });
     }
+    if (tutor.sessionStartDate) {
+      const today = new Date();
+      const startDate = new Date(tutor.sessionStartDate);
 
-    const today = new Date().toISOString().split("T")[0];
-    if (today < tutor.sessionStartDate) {
-      return res.status(400).send({ message: "Booking is not available yet for this tutor" });
+   
+      today.setHours(0, 0, 0, 0);
+      startDate.setHours(0, 0, 0, 0);
+
+      if (today < startDate) {
+        return res.status(400).send({ message: "Booking is not available yet for this tutor" });
+      }
     }
 
     const booking = {
@@ -38,9 +48,11 @@ export const createBooking = async (req, res) => {
 
     res.status(201).send(result);
   } catch (error) {
+    console.error(error);
     res.status(500).send({ message: "Failed to book session" });
   }
 };
+
 
 export const getMyBookings = async (req, res) => {
   try {
