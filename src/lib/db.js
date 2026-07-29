@@ -1,3 +1,4 @@
+
 import { MongoClient, ServerApiVersion } from "mongodb";
 import { seedTutors } from "../../seed/seedTutors.js";
 
@@ -12,32 +13,32 @@ const client = new MongoClient(uri, {
 });
 
 let db;
+let connectPromise;
 
-export const connectDB = async () => {
-  if (db) return db;
+export const connectDB = () => {
+  if (db) return Promise.resolve(db);
 
-  await client.connect();
+  if (!connectPromise) {
+    connectPromise = client.connect().then(async () => {
+      db = client.db("mediqueueDB");
+      const tutorCollection = db.collection("tutors");
+      const count = await tutorCollection.countDocuments();
 
-  db = client.db("mediqueueDB");
+      if (count === 0) {
+        const tutors = seedTutors.map((tutor) => ({
+          ...tutor,
+          createdAt: new Date(),
+        }));
+        await tutorCollection.insertMany(tutors);
+        console.log("✅ Default tutors inserted");
+      }
 
-  const tutorCollection = db.collection("tutors");
-
-  const count = await tutorCollection.countDocuments();
-
-  if (count === 0) {
-    const tutors = seedTutors.map((tutor) => ({
-      ...tutor,
-      createdAt: new Date(),
-    }));
-
-    await tutorCollection.insertMany(tutors);
-
-    console.log("✅ Default tutors inserted");
+      console.log("✅ MongoDB connected");
+      return db;
+    });
   }
 
-  console.log("✅ MongoDB connected");
-
-  return db;
+  return connectPromise;
 };
 
 export const getDB = () => db;

@@ -5,9 +5,7 @@ import { client } from "./db.js";
 
 export const auth = betterAuth({
   database: mongodbAdapter(client.db("mediqueueDB")),
-  emailAndPassword: {
-    enabled: true,
-  },
+  emailAndPassword: { enabled: true },
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -19,9 +17,6 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
   advanced: {
-    crossSubDomainCookies: {
-      enabled: true,
-    },
     defaultCookieAttributes: {
       sameSite: "none",
       secure: true,
