@@ -18,4 +18,13 @@ export const auth = betterAuth({
   trustedOrigins: [process.env.CLIENT_URL],
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
+  advanced: {
+    crossSubDomainCookies: {
+      enabled: true,
+    },
+    defaultCookieAttributes: {
+      sameSite: "none",
+      secure: true,
+    },
+  },
 });
